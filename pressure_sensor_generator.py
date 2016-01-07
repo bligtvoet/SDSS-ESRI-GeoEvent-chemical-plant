@@ -16,7 +16,7 @@ def csvreaderwriter(filename_1):
 
     with open(filename_1,'r') as csv_file:
         reader=csv.reader(csv_file)
-        new_file=open('Sensors_rpress.csv', 'wb')
+        new_file=open('Sensors_rpress_2.csv', 'wb')
         writer= csv.writer(new_file, delimiter=',')
         writer.writerow(['time','id','longitude','lattitude','diameter','pressure','normal_pressure','is_online','on_pipe','coords'])
         
@@ -39,7 +39,7 @@ def csvreaderwriter(filename_1):
         
         
 
-        for times in range(30):             # number of changes per point
+        for times in range(65):             # number of changes per point
             print times
 
             count=0
