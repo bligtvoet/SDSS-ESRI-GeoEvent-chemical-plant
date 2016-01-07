@@ -1,0 +1,115 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Threat level 0</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+	
+  <script src="http://js.arcgis.com/3.14/"></script>
+  <script>
+	require([
+		"esri/layers/FeatureLayer", 
+		"esri/tasks/query"
+	  ],
+	  function(
+		FeatureLayer,
+		Query
+	  ) {
+			esriConfig.defaults.io.corsEnabledServers.push("localhost:6080");
+			
+			function parse(val) {
+				var result = "Not found",
+					tmp = [];
+				location.search
+				//.replace ( "?", "" ) 
+				// this is better, there might be a question mark inside
+				.substr(1)
+					.split("&")
+					.forEach(function (item) {
+					tmp = item.split("=");
+					if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
+				});
+				return result;
+			}
+			
+			console.log(parse("door_int"));
+			var featureLayerURL = "";
+			var whereClause = "";
+			
+			featureLayerURL = "http://localhost:6080/arcgis/rest/services/geosdss/door_monitor/FeatureServer/0";
+			whereClause = "door_int = " + parse("door_int");
+	
+			var layer = new FeatureLayer(featureLayerURL);
+			
+			var query = new Query();
+			query.where = whereClause;
+			query.outFields = ["*"];
+			
+			 
+
+			layer.queryFeatures(query, function(featureSet) {
+
+               console.log(featureSet.features[0].toJson());
+
+               var originalActive = featureSet.features[0].attributes["boolean"];
+               console.log(originalActive);
+
+               var newActive = "";
+			   
+               if (originalActive === "true")
+               {
+                              newActive = "false";
+               }
+               else
+               {
+                              newActive = "true";
+               }
+
+               featureSet.features[0].attributes["boolean"] = newActive;
+               console.log(featureSet.features[0].toJson());
+
+               layer.applyEdits(null, [featureSet.features[0]], null, function(adds, updates, deletes) {
+                                            console.log(updates);
+                              }
+               );
+               console.log(featureSet.features[1].toJson());
+
+               var originalActive2 = featureSet.features[1].attributes["boolean"];
+               console.log(originalActive);
+
+               var newActive2 = "";
+               if (originalActive2 === "true")
+               {
+                              newActive2 = "false";
+               }
+
+               else
+
+               {
+                              newActive2 = "true";
+               }
+
+               featureSet.features[1].attributes["boolean"] = newActive2;
+               console.log(featureSet.features[1].toJson());
+			   
+               layer.applyEdits(null, [featureSet.features[1]], null, function(adds, updates, deletes) {
+                                            console.log(updates);
+                    window.close();
+					}
+               );
+			});
+			
+		}
+	)
+  </script>
+
+</head>
+
+<body>
+  <script src="js/scripts.js"></script>
+</body>
+</html>
